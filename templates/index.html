@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Dashboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+
+        <!-- Logo -->
+        <link rel="shortcut icon" href="{{ url_for('static',filename='images/icon.png') }}" type="image/png">
+        
+        <!-- CSS -->
+        <link rel="stylesheet" type="text/css" href= "{{ url_for('static',filename='styles/main.css') }}">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        
+        <!-- Font -->
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+        
+        <!-- JS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <a class="navbar-brand" href="#top"><img id="logo" src= "{{ url_for('static',filename='images/logo.png') }}"></a>
+        </nav>
+        
+        
+        <section id="sms">
+            <div class="row">
+                <div class="sms-left col-sm">
+                    <div class="container">
+                        <form id="customer_info" class="cus-inform">
+                            <div id="number-part" class="input-block">
+                                <label><i class="fas fa-phone"></i> Customer Phone Number</label>
+                                <div class="container">
+                                    <input name="inputPhone" id="inputPhone" class="form-control" type="number" placeholder="(888) 888-8888"/>
+                                </div>
+                            </div>
+                            <div id="type-part" class="input-block">
+                                <label><i class="fas fa-briefcase"></i> Product Type</label>
+                                <div class="btn-group btn-group-toggle container" data-toggle="buttons">
+                                    <label class="btn btn-outline-secondary">
+                                        <input type="radio" name="inputProduct" id="inputProduct" autocomplete="off" value="Apple"> Apple
+                                    </label>
+                                    <label class="btn btn-outline-secondary">
+                                        <input type="radio" name="inputProduct" id="inputProduct" autocomplete="off" value="Cherry"> Cherry
+                                    </label>
+                                    <label class="btn btn-outline-secondary">
+                                        <input type="radio" name="inputProduct" id="inputProduct" autocomplete="off" value="Grape"> Grape
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="name-part" class="input-block">
+                                <label><i class="fas fa-user"></i> Customer Name</label>
+                                <div class="container">
+                                    <input name="inputName" id="inputName" class="form-control" placeholder="Amy"/>
+                                </div>
+                            </div>
+                            <div class="text-center"><button type="button" class="btn btn-warning" id="btnSendsms">Submit</button></div>
+                        </form>
+                    </div>
+                </div>
+                <div class="sms-right col-sm-8">
+                    <div class="message">
+                        <div class="container message-item">
+                            <h5>First Automated Message</h5>
+                            <form class="container message-block" id="formFirstmsg">
+                                <label id="firstmsg_label">{{first_msg}}</label>
+                                <button type="button" class="btn btn-success" id="btnEditFirstmsg">Edit</button>
+                            </form>
+                        </div>
+                        <div class="container message-item">
+                            <h5>if Positive Response <i class="far fa-smile"></i></h5>
+                            <form class="container message-block" id="formSecondposmsg">
+                                <label id="secondposmsg_label">{{second_posmsg}}</label>
+                                <button type="button" class="btn btn-success" id="btnEditSecondposmsg">Edit</button>
+                            </form>
+                        </div>
+                        <div class="container message-item">
+                            <h5>if Negative Response <i class="far fa-frown"></i></h5>
+                            <form class="container message-block" id="formSecondnegmsg">
+                                <label id="secondnegmsg_label">{{second_negmsg}}</label>
+                                <button type="button" class="btn btn-success" id="btnEditSecondnegmsg">Edit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center">
+            <p>Copyright © 2018 Shang6723</p>
+        </footer>
+    </body>
+</html>
+<script>
+    $(function() {
+        $('#btnSendsms').click(function() {
+            $.ajax({
+                url: '/sendsms',
+                data: $('#customer_info').serialize(),
+                type: 'POST',
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+            location.reload();
+        });
+        $('#btnEditFirstmsg').click(function() {
+            $("#formFirstmsg").append("<input class='form-control' name='inputMessage' value='"+$('#firstmsg_label').html()+"'>&nbsp");
+            $("#formFirstmsg").append("<button type='button' class='btn btn-info' id='btnSubmitFirstmsg'>Submit</button>");
+            $("#firstmsg_label").remove();
+            $("#btnEditFirstmsg").remove();
+        });
+        $('#btnEditSecondposmsg').click(function() {
+            $("#formSecondposmsg").append("<input class='form-control' name='inputMessage' value='"+$('#secondposmsg_label').html()+"'>&nbsp");
+            $("#formSecondposmsg").append("<button type='button' class='btn btn-info' id='btnSubmitSecondposmsg'>Submit</button>");
+            $("#secondposmsg_label").remove();
+            $("#btnEditSecondposmsg").remove();
+        });
+        $('#btnEditSecondnegmsg').click(function() {
+            $("#formSecondnegmsg").append("<input class='form-control' name='inputMessage' value='"+$('#secondnegmsg_label').html()+"'>&nbsp");
+            $("#formSecondnegmsg").append("<button type='button' class='btn btn-info' id='btnSubmitSecondnegmsg'>Submit</button>");
+            $("#secondnegmsg_label").remove();
+            $("#btnEditSecondnegmsg").remove();
+        });
+        $('body').on('click', '#btnSubmitFirstmsg', function() {
+            $.ajax({
+                url: '/edit_firstmsg',
+                data: $('#formFirstmsg').serialize(),
+                type: 'POST',
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+            location.reload();
+        });
+        $('body').on('click', '#btnSubmitSecondposmsg', function() {
+            $.ajax({
+                url: '/edit_secondposmsg',
+                data: $('#formSecondposmsg').serialize(),
+                type: 'POST',
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+            location.reload();
+        });
+        $('body').on('click', '#btnSubmitSecondnegmsg', function() {
+            $.ajax({
+                url: '/edit_secondnegmsg',
+                data: $('#formSecondnegmsg').serialize(),
+                type: 'POST',
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+            location.reload();
+        });
+    });
+</script>
